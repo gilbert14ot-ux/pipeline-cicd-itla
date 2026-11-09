@@ -48,6 +48,18 @@ function createApp() {
     res.json(tarea);
   });
 
+  app.delete('/api/tareas/:id', (req, res) => {
+  const indice = tareas.findIndex(t => t.id === Number(req.params.id));
+
+  if (indice === -1) {
+    return res.status(404).json({ error: 'Tarea no encontrada' });
+  }
+
+  tareas.splice(indice, 1);
+
+  res.json({ mensaje: 'Tarea eliminada correctamente' });
+});
+
   return app;
 }
 

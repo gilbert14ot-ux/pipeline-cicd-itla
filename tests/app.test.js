@@ -33,6 +33,34 @@ describe('API de tareas', () => {
     expect(r.status).toBe(404);
   });
 
+    test('DELETE /api/tareas/:id elimina una tarea', async () => {
+    await request(app).post('/api/tareas').send({ titulo: 'Tarea para eliminar' });
+
+    const r = await request(app).delete('/api/tareas/1');
+
+    expect(r.status).toBe(200);
+    expect(r.body.mensaje).toBe('Tarea eliminada correctamente');
+
+    const tareas = await request(app).get('/api/tareas');
+    expect(tareas.body).toHaveLength(0);
+  });
+
+    test('POST /api/tareas con título demasiado largo devuelve 400', async () => {
+    const r = await request(app)
+      .post('/api/tareas')
+      .send({ titulo: 'A'.repeat(101) });
+
+    expect(r.status).toBe(400);
+    expect(r.body.error).toBe('El título es obligatorio');
+  });
+
+  test('DELETE de una tarea inexistente devuelve 404', async () => {
+    const r = await request(app).delete('/api/tareas/99');
+
+    expect(r.status).toBe(404);
+    expect(r.body.error).toBe('Tarea no encontrada');
+  });
+
   test('GET /metrics cuenta solicitudes y tareas', async () => {
     await request(app).post('/api/tareas').send({ titulo: 'Medir' });
     const r = await request(app).get('/metrics');
