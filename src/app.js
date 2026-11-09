@@ -1,6 +1,7 @@
 // Aplicación web mínima: lista de tareas en memoria + endpoints de salud y métricas.
 const express = require('express');
 const path = require('path');
+const { normalizarTitulo } = require('./validaciones');
 
 function createApp() {
   const app = express();
@@ -33,7 +34,7 @@ function createApp() {
   app.get('/api/tareas', (req, res) => res.json(tareas));
 
   app.post('/api/tareas', (req, res) => {
-    const titulo = (req.body && typeof req.body.titulo === 'string') ? req.body.titulo.trim() : '';
+    const titulo = normalizarTitulo(req.body && req.body.titulo);
     if (!titulo) return res.status(400).json({ error: 'El título es obligatorio' });
     const tarea = { id: tareas.length + 1, titulo, completada: false };
     tareas.push(tarea);
